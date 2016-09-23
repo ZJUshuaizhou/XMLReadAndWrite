@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+ <tree rootnode="root">
+  <treenode rootnode="root" name="root" parent="null" child="a b" grandson="c d e i"></treenode>
+  <treenode rootnode="root" name="a" parent="root" child="c d e" grandson="f"></treenode>
+  <treenode rootnode="root" name="c" parent="a" child="f" grandson="h"></treenode>
+  <treenode rootnode="root" name="d" parent="a" child="f" grandson="h"></treenode>
+  <treenode rootnode="root" name="e" parent="a" child="f" grandson="h"></treenode>
+  <treenode rootnode="root" name="f" parent="c" child="h" grandson="null"></treenode>
+  <treenode rootnode="root" name="h" parent="f" child="null" grandson="null"></treenode>
+  <treenode rootnode="root" name="b" parent="root" child="i" grandson="null"></treenode>
+  <treenode rootnode="root" name="i" parent="b" child="null" grandson="null"></treenode>
+ </tree>
+ <tree rootnode="root1">
+  <treenode rootnode="root1" name="root1" parent="null" child="a b" grandson="c d e i"></treenode>
+  <treenode rootnode="root1" name="a" parent="root1" child="c d e" grandson="f"></treenode>
+  <treenode rootnode="root1" name="c" parent="a" child="f" grandson="h"></treenode>
+  <treenode rootnode="root1" name="d" parent="a" child="f" grandson="h"></treenode>
+  <treenode rootnode="root1" name="e" parent="a" child="f" grandson="h"></treenode>
+  <treenode rootnode="root1" name="f" parent="c" child="h" grandson="null"></treenode>
+  <treenode rootnode="root1" name="h" parent="f" child="null" grandson="null"></treenode>
+  <treenode rootnode="root1" name="b" parent="root1" child="i" grandson="null"></treenode>
+  <treenode rootnode="root1" name="i" parent="b" child="null" grandson="null"></treenode>
+ </tree>
+</config>
+

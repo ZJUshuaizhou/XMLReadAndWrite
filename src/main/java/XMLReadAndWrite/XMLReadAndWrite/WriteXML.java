@@ -45,26 +45,55 @@ public class WriteXML {
 		// writeXML.structureTreeNode();
 		ControllerConfig.init();
 		Map<String, URLTreeNode> rootnodes = ControllerConfig.getRootnodes();
-		for (Map.Entry<String, URLTreeNode> entrychild : rootnodes.entrySet()) {
-			urlTreeNodesMap.put(entrychild.getKey(), new ConcurrentHashMap<String, URLTreeNode>());
-			trasvelUrlTree(entrychild.getKey(), entrychild.getValue());
-			LOGGER.debug(entrychild.getKey());
-		}
+		
+		WriteXML wXml=new WriteXML();
+		wXml.exportTree(rootnodes, "/home/ishadow/Desktop/test1.xml");
+//		for (Map.Entry<String, URLTreeNode> entrychild : rootnodes.entrySet()) {
+//			urlTreeNodesMap.put(entrychild.getKey(), new ConcurrentHashMap<String, URLTreeNode>());
+//			urlTreeNodesMap.get(entrychild.getKey()).put(entrychild.getKey(), entrychild.getValue());
+//			trasvelUrlTree(entrychild.getKey(), entrychild.getValue());
+//			LOGGER.debug(entrychild.getKey());
+//		}
+//
+//		for (Map.Entry<String, Map<String, URLTreeNode>> entry : urlTreeNodesMap.entrySet()) {
+//			LOGGER.debug("rootnod : ----------------" + entry.getKey() + "------------------");
+//			ControllerConfig.trasvel(entry.getValue());
+//		}
+//		transformFromURLNodesToXMLNodes();
+//		for (Map.Entry<String, Map<String, XMLTreeNode>> entry : xmlTreeNodesMap.entrySet()) {
+//			LOGGER.debug("rootnod : ----------------" + entry.getKey() + "------------------");
+//			ControllerConfig.trasvelXML(entry.getValue()); 
+//		}
+//		String path="/home/ishadow/Desktop/test1.xml";
+//		structureTreeNode(path);
+	}
+	
+	public boolean exportTree(Map<String, URLTreeNode> rootnodes,String path) {
+		try {
+			for (Map.Entry<String, URLTreeNode> entrychild : rootnodes.entrySet()) {
+				urlTreeNodesMap.put(entrychild.getKey(), new ConcurrentHashMap<String, URLTreeNode>());
+				urlTreeNodesMap.get(entrychild.getKey()).put(entrychild.getKey(), entrychild.getValue());
+				trasvelUrlTree(entrychild.getKey(), entrychild.getValue());
+				LOGGER.debug(entrychild.getKey());
+			}
 
-		for (Map.Entry<String, Map<String, URLTreeNode>> entry : urlTreeNodesMap.entrySet()) {
-			LOGGER.debug("rootnod : ----------------" + entry.getKey() + "------------------");
-			ControllerConfig.trasvel(entry.getValue());// trasvel(entry.getValue());
-			// rootnodes.put(entry.getKey(),
-			// entry.getValue().get(entry.getKey()));
+			for (Map.Entry<String, Map<String, URLTreeNode>> entry : urlTreeNodesMap.entrySet()) {
+				LOGGER.debug("rootnod : ----------------" + entry.getKey() + "------------------");
+				ControllerConfig.trasvel(entry.getValue());
+			}
+			transformFromURLNodesToXMLNodes();
+			for (Map.Entry<String, Map<String, XMLTreeNode>> entry : xmlTreeNodesMap.entrySet()) {
+				LOGGER.debug("rootnod : ----------------" + entry.getKey() + "------------------");
+				ControllerConfig.trasvelXML(entry.getValue()); 
+			}
+//			String path="/home/ishadow/Desktop/test1.xml";
+			structureTreeNode(path);
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.error(e.toString());;
 		}
-		transformFromURLNodesToXMLNodes();
-		for (Map.Entry<String, Map<String, XMLTreeNode>> entry : xmlTreeNodesMap.entrySet()) {
-			LOGGER.debug("rootnod : ----------------" + entry.getKey() + "------------------");
-			ControllerConfig.trasvelXML(entry.getValue());
-			// rootnodes.put(entry.getKey(),
-			// entry.getValue().get(entry.getKey()));
-		}
-
+		
+		return true;
 	}
 
 	/**
@@ -81,20 +110,23 @@ public class WriteXML {
 	 *            树的孙子节点集合
 	 * @return Element 类型的节点
 	 */
-	public Element addTreeNode(Document document, String name, String parent, String child, String grandson) {
+	public  Element addTreeNode(Document document, String rootNodeName,String name, String parent, String child, String grandson) {
 
 		Element treenode = document.createElement(TREENODE);
-
+		
+		Attr treeRootNode = document.createAttribute(ROOTNODE);
 		Attr treeNodeName = document.createAttribute(NAME);
 		Attr treeNodeParent = document.createAttribute(PARENT);
 		Attr treeNodeChild = document.createAttribute(CHILD);
 		Attr treeNodeGrandson = document.createAttribute(GRANDSON);
-
+		
+		treeRootNode.setValue(rootNodeName);
 		treeNodeName.setValue(name);
 		treeNodeParent.setValue(parent);
 		treeNodeChild.setValue(child);
 		treeNodeGrandson.setValue(grandson);
 
+		treenode.setAttributeNode(treeRootNode);
 		treenode.setAttributeNode(treeNodeName);
 		treenode.setAttributeNode(treeNodeParent);
 		treenode.setAttributeNode(treeNodeChild);
@@ -112,7 +144,7 @@ public class WriteXML {
 	 *            根节点的名称
 	 * @return Attr类型的属性节点
 	 */
-	public Attr addRootNode(Document document, String rootName) {
+	public static Attr addRootNode(Document document, String rootName) {
 		Attr rootNodeName = document.createAttribute(ROOTNODE);
 		rootNodeName.setValue(rootName);
 		return rootNodeName;
@@ -121,7 +153,7 @@ public class WriteXML {
 	/**
 	 * 整体整合xml
 	 */
-	public void structureTreeNode() {
+	public  void structureTreeNode(String path) {
 
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		try {
@@ -133,36 +165,20 @@ public class WriteXML {
 			 * 添加第一个树
 			 */
 			document.appendChild(config);
-			Element tree = document.createElement(TREE);
-			config.appendChild(tree);
-			tree.setAttributeNode(addRootNode(document, "root"));
-			tree.appendChild(addTreeNode(document, "root", "null", "a b", "c d e i"));
-			tree.appendChild(addTreeNode(document, "a", "root", "c d e", "f"));
-			tree.appendChild(addTreeNode(document, "c", "a", "f", "h"));
-			tree.appendChild(addTreeNode(document, "d", "a", "f", "h"));
-			tree.appendChild(addTreeNode(document, "e", "a", "f", "h"));
-			tree.appendChild(addTreeNode(document, "f", "c", "h", "null"));
-			tree.appendChild(addTreeNode(document, "h", "f", "null", "null"));
-			tree.appendChild(addTreeNode(document, "b", "root", "i", "null"));
-			tree.appendChild(addTreeNode(document, "i", "b", "null", "null"));
-			/**
-			 * 添加第二个树
-			 */
-			Element tree2 = document.createElement(TREE);
-			config.appendChild(tree2);
-			tree2.setAttributeNode(addRootNode(document, "root1"));
-			tree2.appendChild(addTreeNode(document, "root1", "null", "a b", "c d e i"));
-			tree2.appendChild(addTreeNode(document, "a", "root", "c d e", "f"));
-			tree2.appendChild(addTreeNode(document, "c", "a", "f", "h"));
-			tree2.appendChild(addTreeNode(document, "d", "a", "f", "h"));
-			tree2.appendChild(addTreeNode(document, "e", "a", "f", "h"));
-			tree2.appendChild(addTreeNode(document, "f", "c", "h", "null"));
-			tree2.appendChild(addTreeNode(document, "h", "f", "null", "null"));
-			tree2.appendChild(addTreeNode(document, "b", "root", "i", "null"));
-			tree2.appendChild(addTreeNode(document, "i", "b", "null", "null"));
-
+			
+			
+			for (Map.Entry<String, Map<String, XMLTreeNode>> entry : xmlTreeNodesMap.entrySet()) {
+				Element tree = document.createElement(TREE);
+				config.appendChild(tree);
+				tree.setAttributeNode(addRootNode(document,entry.getKey()));
+				LOGGER.debug("rootnod : ----------------" + entry.getKey() + "------------------");
+				for (Map.Entry<String, XMLTreeNode> xmlnode : entry.getValue().entrySet()) {
+					tree.appendChild(addTreeNode(document, xmlnode.getValue().getRootnode(),xmlnode.getValue().getName(),xmlnode.getValue().getParent(),xmlnode.getValue().getChild(),xmlnode.getValue().getGrandson()));
+					LOGGER.debug("rootnod : ----------------" + xmlnode.getKey() + "------------------");
+				}
+			}
 			try {
-				FileOutputStream fos = new FileOutputStream(new File("/home/ishadow/Desktop/test.xml"));
+				FileOutputStream fos = new FileOutputStream(new File(path));
 
 				try {
 					((org.apache.crimson.tree.XmlDocument) document).write(fos);
@@ -192,7 +208,7 @@ public class WriteXML {
 	 * @Title: trasvelUrlTree @Description: TODO 由根节点遍历整个树 @param rootNodeName
 	 *         根节点名称 @param rootnode @throws
 	 */
-	public static void trasvelUrlTree(String rootNodeName, URLTreeNode rootnode) {
+	public  void trasvelUrlTree(String rootNodeName, URLTreeNode rootnode) {
 		if (rootnode.getChild() != null && rootnode.getChild().size() > 0) {
 			for (Map.Entry<String, URLTreeNode> entrychild : rootnode.getChild().entrySet()) {
 				LOGGER.debug(entrychild.getKey() + "  ---  " + rootNodeName);
@@ -203,7 +219,7 @@ public class WriteXML {
 		}
 	}
 
-	public static void transformFromURLNodesToXMLNodes() {
+	public  void transformFromURLNodesToXMLNodes() {
 		for (Map.Entry<String, Map<String, URLTreeNode>> urlTreeNodes : urlTreeNodesMap.entrySet()) {
 
 			if (!xmlTreeNodesMap.containsKey(urlTreeNodes.getKey())) {
@@ -262,7 +278,7 @@ public class WriteXML {
 		}
 	}
 
-	public static Map<String, XMLTreeNode> transformFromUrltreeToXmlTree(Map<String, URLTreeNode> outputNodes) {
+	public  Map<String, XMLTreeNode> transformFromUrltreeToXmlTree(Map<String, URLTreeNode> outputNodes) {
 		for (Map.Entry<String, URLTreeNode> entry : outputNodes.entrySet()) {
 			StringBuffer output = new StringBuffer();
 			output.append("node:[" + entry.getValue().getName() + ";");

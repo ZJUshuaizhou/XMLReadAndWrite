@@ -29,7 +29,11 @@ public class ControllerConfig {
 	private static Map<String, URLTreeNode> rootnodes = new ConcurrentHashMap<String, URLTreeNode>();
 	private static Map<String, Map<String, URLTreeNode>> urlTreeNodesMap = new ConcurrentHashMap<String, Map<String, URLTreeNode>>();
 	private static Map<String, Map<String, XMLTreeNode>> xmlTreeNodesMap = new ConcurrentHashMap<String, Map<String, XMLTreeNode>>();
-
+	
+	public Map<String, URLTreeNode> importTree() {
+		init();
+		return rootnodes;
+	}
 	/**
 	 * 
 	 * @Title: init @Description: TODO(从xml读取内容将程序变量初始化) @throws
@@ -63,7 +67,7 @@ public class ControllerConfig {
 //			trasvel(rootnodes);
 //			System.out.println("rootnodes------------------------------------------------------");
 		}
-
+		
 	}
 
 	/**
